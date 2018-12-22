@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div id="demo">
+<h1>The XMLHttpRequest Object</h1>
+<button type="button" onclick="loadDoc()">Change Content</button>
+</div>
+
+<script>
+function loadDoc() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("demo").innerHTML =
+        this.responseText;
+    }
+    };
+
+    console.log('[TEST1] Upload API: Send a JSON to server.')
+    xhttp.open("POST", "http://cml0.csie.ntu.edu.tw:30194/upload", false);
+    temp = {a: "abc", b: {c: 34, d: 0.9, e: 'hello'}}
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(temp));
+    console.log(xhttp.responseText)
+    // try to link the url from the console
+    
+    console.log('[TEST2] Query API: Query with a name')
+    xhttp.open("POST", "http://cml0.csie.ntu.edu.tw:30194/name/esker", false);
+    xhttp.send();
+    obj = JSON.parse(xhttp.responseText);
+    console.log(obj);
+    
+}
+</script>
+
+</body>
+</html>

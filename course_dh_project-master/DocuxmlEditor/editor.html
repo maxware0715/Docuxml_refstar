@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)https://docusky.digital.ntu.edu.tw/DocuSky/docuTools/DocuXmlEditor/editor.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <script src="./editor_files/FileSaver.min.js"></script>      <!-- 儲存檔案 -->
+    <script src="./editor_files/jquery.min.js"></script>
+    <script src="./editor_files/jquery-ui.min.js"></script>
+    <link href="./editor_files/jquery-ui.min.css" rel="stylesheet">
+    <script src="./editor_files/docusky.ui.manageDbListSimpleUI.js"></script>
+    <style type="text/css">
+        body { margin: 0; font-family: Arial, Verdana, Microsoft JhengHei; line-height:150%; }
+        div.headerBar { background-color:brown; color:white; padding:8px; text-align: center; }
+        a.topAnchor:visited, a.topAnchor:link { color:#EFEFEF; cursor:pointer; }
+        div.contentArea { padding: 12px; }
+        div.outputArea { padding: 12px; }
+        table.fileInfo {
+            width:100%;
+            border-collapse: separate;
+            border:2px solid gray;
+            border-radius:3px;
+            border-spacing: 2px;
+            padding: 3px;
+        }
+        tr.fileInfo:nth-child(even) { background: #EFEFEF; color:black; }
+        tr.fileInfo:nth-child(odd)  { background: #CFCFCF; color:black; }
+        tr.fileInfo:nth-child(1)    { background: #7F7F7F; color:white; }
+        td.fileInfo { padding: 3px;  vertical-align:top; }
+        span.fileDataItemTitle { margin-left:5px }
+        span.button { padding:6px; background-color:green; color:white;
+            border-radius:4px; box-shadow: 3px 3px 2px #CFCFCF; cursor:pointer; }
+        doc_content{
+            background-color: #DDDDDD;
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 20px;
+
+        }
+        Paragraph{
+            display: block;
+        }
+        LocName{
+            background-color: yellow;
+            padding: 2px;
+            margin: 2px;
+            border-radius: 4px;
+        }
+        PersonName{
+            background-color: #DFA0A0;
+            padding: 2px;
+            margin: 2px;
+            border-radius: 4px;
+        }
+        .Udef {
+            background-color: #4F6F4F;
+            color: #EFEFEF;
+            padding: 2px;
+            border-radius: 4px;
+            line-height: 200%;
+        }
+        udefforcolor{
+            background-color: #4F6F4F;
+            color: #EFEFEF;
+            padding: 2px;
+            border-radius: 4px;
+            line-height: 200%;
+        }
+        xml_metadata{
+            display: none;
+        }
+
+
+
+    </style>
+<script src="chrome-extension://ocggccaacacpienfcgmgcihoombokbbj/pages/client/livestartpage-message-add.js"></script></head>
+<body>
+<div id="headerBar" class="headerBar">
+    <table class="headerBar" width="100%">
+        <tbody><tr><td width="180" style="font-size:110%" align="left"><b>DocuSky</b><span style="font-size:60%;vertical-align:sub">BETA</span></td>
+            <td><span style="font-size:105%">此工具可用來編輯DocuXml</span></td>
+            <td align="right"><a class="topAnchor" href="https://docusky.digital.ntu.edu.tw/DocuSky/index.html">首頁</a> | <a class="topAnchor" href="https://docusky.digital.ntu.edu.tw/DocuSky/userMainPage.php">我的資料庫</a></td>
+        </tr>
+    </tbody></table>
+</div>
+<div class="contentArea">
+    <table>
+        <tbody><tr><td valign="top"><nobr>簡要說明：</nobr></td>
+            <td>此工具可讀入一份 ThdlExportXml 檔，經過編輯後，輸出另一份 ThdlExportXml 檔。</td>
+        </tr>
+    </tbody></table>
+    <br>
+    <b>步驟1. 讀入 ThdlExportXml 檔案:</b>
+    <ul style="line-height:180%">
+        <li>選擇檔案：<input id="selectInFile" type="file" autocomplete="off" accept=".xml"></li>
+    </ul>
+
+    <button onclick="$(&#39;#xmlMetadataFields&#39;).toggle()">▼</button> 已載入檔案： <span id="loadedFileBrief"></span><br>
+    <table id="xmlMetadataFields" class="fileInfo">
+        <tbody><tr class="fileInfo">
+            <td class="fileInfo" align="center">編號</td>
+            <td class="fileInfo" align="center" width="36%">文獻集 metadata 欄位</td>
+            <td class="fileInfo" align="center" width="30%">該欄位的一般的用途</td>
+            <td class="fileInfo" align="center">將左側欄位的值，複製到另一個欄位</td>
+        </tr>
+    </tbody></table>
+    <div class="contentArea">
+        <b>步驟1-1. 新增文獻集 metadata欄位 :</b>
+        <br>
+        欄位名稱:
+        <input type="text" id="NewMetaDataName" size="20">
+        &nbsp;內文預設值:
+        <input type="text" id="NewMetaDataValue" size="20" value="-">
+        &nbsp;<button onclick="AddMetaData()">新增</button>
+
+    </div>
+    <div style="padding-top:10px">
+        ▶ 是否要更新 corpus 欄位內容，將所有的文件都放在單一文獻集之下？
+        <input id="inputNewCorpus" type="checkbox" autocomplete="off">是
+        <span id="spanNewCorpus" style="display:none">
+          &nbsp;文獻集名稱: <input id="newCorpusVal" type="text" autocomplete="off">
+          </span>
+    </div>
+    <div style="padding-top:10px">
+        <button onclick="$(&#39;#xmlMetadataTagTitle&#39;).toggle()">▼</button> 可指定 Post-Classification 的標籤顯示名稱（若有多項相同性質的標籤，後分類顯示時，預設只會顯示一項）:
+        <table id="xmlMetadataTagTitle" class="fileInfo">
+            <tbody><tr class="fileInfo">
+                <td class="fileInfo" align="center"><nobr>編號</nobr></td>
+                <td class="fileInfo" align="center" width="18%">metadata 標籤</td>
+                <td class="fileInfo" align="center" width="12%">可用於後分類</td>
+                <td class="fileInfo" align="center" width="22%">該標籤預設的標題</td>  <!-- 預設標題通常為代碼 -->
+                <td class="fileInfo" align="center" width="22%">自訂的顯示標題</td>
+                <td class="fileInfo" align="center">是否強迫顯示</td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div style="padding-top:10px">
+        <button onclick="$(&#39;#xmlFeatureAnalysisTagTitle&#39;).toggle()">▼</button> 可指定 Tag Analysis 的標籤顯示名稱:
+        <table id="xmlFeatureAnalysisTagTitle" class="fileInfo">
+            <tbody><tr class="fileInfo">
+                <td class="fileInfo" align="center">編號</td>
+                <td class="fileInfo" align="center" width="20%">標籤</td>
+                <!--<td class="fileInfo" align="center" width="18%">類別</td>-->
+                <td class="fileInfo" align="center" width="30%">該標籤原先的標題</td>  <!-- 預設標題通常為 Category/SubCategory -->
+                <td class="fileInfo" align="center">自訂的顯示標題</td>
+            </tr>
+        </tbody></table>
+    </div>
+    <br>
+    <div style="float:right">
+        <span id="computeThdlExportXml" class="button">套用以上規則後，更新顯示</span>
+    </div>
+</div>
+<div class="contentArea">
+    <b>步驟1-2. 新增 SpecificTag:</b>
+    <br>
+    <!--編號：-->
+    <!--<input type="text" id="SpecificTermID"  size="20">-->
+    標籤: Udef_
+    <input type="text" id="SpecificTermTag" size="20">
+    <!--標題: Udef_-->
+    <!--<input type="text" id="SpecificTermTitle"  size="20">/- -->
+    <button id="AddSpecificTerm" onclick="AddSpecificTerm()">新增</button>
+
+</div>
+<div class="contentArea">
+    <b>步驟2. 修改 全文內容:</b>
+    <!--<div id="DocContext"><textarea style="width: 50%;" rows="15">如果你看到這一欄位，表示你尚未讀取XML。</textarea></div>-->
+    <div id="DocContext" contenteditable="true" style="overflow:auto; width: 50%;height: 200px;border: 1px solid #ccc;padding: 5px;"></div>
+        <button onclick="ModifyDocContent()">確認修改</button>
+    </div>
+    <div class="contentArea">
+        <b>步驟2-1. 修改 ThdlExportXml Tag內容:</b><a style="color: darkred; font-size: small">( ★ 選取灰底部分的文字，下方會出現您要加上的Tag )</a>
+        <div id="eachdocument" onmouseup="TagPopup()">如果你看到這一欄位，表示你尚未讀取XML。</div>
+        <button id="DocPre" onclick="PreDoc()" class="button">上一個</button>
+        <button id="DocSaveANDNext" onclick="saveAndNextDoc()" class="button">點我儲存&amp;下一個</button>
+        <br>
+        跳到第：
+        <input type="text" id="NumJumpSpecificDoc" size="5"> 篇章
+        <button onclick="JumpSpecificDoc()" class="button">執行</button>
+        <div id="PopupBox" style="display:none;">
+            <a style="color: gray">Action: </a>
+            <button onclick="TagText(this.innerHTML)">UnTag</button>
+            <button onclick="TagText(this.innerHTML)">LocName</button>
+            <button onclick="TagText(this.innerHTML)">PersonName</button>
+            <span id="InnerPopupBox"></span>
+            <p style="color: darkred; font-size: small; margin: 0em">( ★ Note: CBDB RefId needs cbdb_XXX and TWGIZ, TGAZ needs twgis_XXX, hvd_XXX )</p>
+            <div>
+                <a style="color: gray">Search database: </a>
+                <button onclick="SearchOutside(this.innerHTML)">CBDB</button>
+                <button onclick="SearchOutside(this.innerHTML)">TWGIS</button>
+                <button onclick="SearchOutside(this.innerHTML)">TGAZ</button>
+            </div>
+        </div>
+        <br>
+        <button onclick="$(&#39;#ShowDocMetaData&#39;).toggle()">▶</button> MetaData欄位清單與內容
+        <div id="ShowDocMetaData"></div>
+        <div id="DanXinPic"></div>
+    </div>
+
+    <div id="advanceTaggingArea" class="contentArea">
+        <button id="openAdvanceTagging">▶</button>步驟2-2. 搜尋與一鍵標記
+        <div id="2-2AdvanceTagging">
+            <br>
+            欲標註文字：
+            <input type="text" id="AdvanceTagTerm" size="20">
+            <br>
+            選擇標籤:
+            <select id="AdvanceTag">
+                <option selected="" value=""> -- select an option -- </option>
+                <!--add tags option there-->
+                <option value="locname">LocName</option>
+                <option value="personname">PersonName</option>
+            </select>
+            <!--<input type="text" id="AdvanceTag"  size="20">-->
+            <br>
+            <div id="isAddRefId" style="display: none;">
+                <input type="checkbox">是否有需加入CBDB、TWGIZ或TGAZ的RefId
+                <!--if users check the check box, show below input text to them-->
+                <div id="AdvanceTagRefIdArea" style="display: none;">
+                    RefId: <input type="text" id="AdvanceTagRefId" size="20">
+                    <a style="color: darkred; font-size: small;">★ Note: CBDB RefId needs cbdb_XXX and TWGIZ, TGAZ needs twgis_XXX, hvd_XXX</a>
+                </div>
+            </div>
+            <button onclick="AddAdvanceTag()">新增</button>
+        </div>
+    </div>
+
+    <script src="./editor_files/refstar.js"></script>
+
+    <br>
+    <div class="contentArea">
+        <b>步驟3. 輸出 ThdlExportXml 檔案:</b>
+        <ul style="line-height:180%">
+            <li>欲儲存的建庫檔名：<input type="text" id="outXmlFilename" value="NewExportFilename.xml" size="45" autocomplete="off">
+                <button id="saveThdlExportXmlToFile">點我儲存</button></li>
+        </ul>
+    </div>
+    <div class="outputArea">
+        <b>步驟4. 上載單份 ThdlExportXml 檔以建構文字資料庫:</b>
+        <div id="HeaderBar">
+            <span id="manageDbList" style="padding:3px; border:blue 2px solid; background:blue; color:white; border-radius:3px; cursor:pointer">管理文獻集</span>
+        </div>
+    </div>
+    <br>
+
+    <br><br>
+    <div class="outputArea">
+        <b>Refstar: 搜尋資料庫的權威檔</b>
+        <ul style="line-height:180%">
+            <li>想搜尋的Tag：<input type="text" id="refstar_search" value="search" size="45" autocomplete="off">
+                <button id="refstar_search_buttom">點我搜尋</button></li>
+        </ul>
+    </div>
+    <br><br>
+    <div class="outputArea">
+        <b>Refstar: 編輯自己的權威檔</b>
+    
+    
+        <div class="input_fields_wrap">
+            <button class="add_field_button">Add More Fields</button>
+            <!--<div><input type="text" name="mytext[]"></div>-->
+        </div>
+    </div>
+    <br>
+
+<script src="./editor_files/editor.js"></script>
+<script src="./editor_files/tagging.js"></script>
+
+</body></html>

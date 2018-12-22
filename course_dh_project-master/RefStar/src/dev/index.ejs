@@ -1,0 +1,18 @@
+<!DOCTYPE html>  
+<html>
+    <title> <%= title %> </title>
+    <header>
+        <style>
+            body {
+                background-color: powderblue
+            }
+        </style>
+    </header>
+    <body>
+        <div id="root"></div>
+    
+    <script type='text/javascript'>
+        var data = <%-JSON.stringify(data) %>
+    </script>
+    <script type="text/javascript" src="bundle.js"></script></body>
+</html>
